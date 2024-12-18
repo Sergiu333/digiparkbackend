@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"     # Mapare pentru HTTP
+      - "8443:8443"   # Mapare pentru HTTPS
+    volumes:
+      - /etc/letsencrypt/live/docker.dotdev.space/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/docker.dotdev.space/privkey.pem:/etc/ssl/private/privkey.pem:ro
