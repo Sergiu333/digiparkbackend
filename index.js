@@ -12,7 +12,8 @@ const allowedCors = [
     '185.104.45.132',
     'https://digipark-front.vercel.app',
     'digipark-front.vercel.app',
-    'https://i-vama.vercel.app'
+    'https://i-vama.vercel.app',
+    'i-vama.vercel.app'
 ]
 
 var corsOptions = {
@@ -53,7 +54,7 @@ app.use('/api/Auth', routerAuth);
 app.use('/api/PuncteDeDevamare', routerPuncteDeDevamare);
 app.use('/api/PuncteDeTrecere', routerPuncteDeTrecere);
 app.use('/api/Istoric',routerIstoric);
-// app.use('/api/User',routerUser);
+app.use('/api/User',routerUser);
 
 //testing api
 app.get('/', (req, res) => {
