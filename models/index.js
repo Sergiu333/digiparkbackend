@@ -9,6 +9,7 @@ const sequelize = new Sequelize(
     {
         host: dbConfig.host,
         dialect: 'mysql',
+        dialectModule: require('mysql2'),
         port: dbConfig.port,
         pool: {
             max: dbConfig.pool.max,
