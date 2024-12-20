@@ -194,12 +194,39 @@ const deletePunctDeTrecere = async (req, res) => {
 const getTimpMediuPuncteTrecere = async (req, res) => {
     try {
         const query = `
-            SELECT p.Adresa, p.Locatia_punct_de_trecere, p.Vama, 
-                   AVG(TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)) AS timp_mediu_minute
+            SELECT 
+                p.Adresa, 
+                p.Locatia_punct_de_trecere, 
+                p.Vama, 
+                (SELECT TIMESTAMPDIFF(MINUTE, c2.Timp_intrare, c2.Timp_iesire)
+                 FROM Camioane c2
+                 WHERE c2.id_punct_de_trecere = p.id 
+                       AND c2.isDeleted = false
+                 ORDER BY c2.Timp_iesire DESC
+                 LIMIT 1) AS timp_stat_ultima_masina_minute,
+                AVG(TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)) AS timp_mediu_minute,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 1 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultima_ora,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 12 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_12_ore,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 1 DAY THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_24_ore,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 1 WEEK THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultima_saptamana,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 1 MONTH THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultima_luna
             FROM Puncte_de_trecere p
-            LEFT JOIN Camioane c ON p.id = c.id_punct_de_trecere
-            WHERE p.isDeleted = false 
-            GROUP BY p.id
+            LEFT JOIN Camioane c 
+                ON p.id = c.id_punct_de_trecere
+            WHERE 
+                p.isDeleted = false
+            GROUP BY 
+                p.id
         `;
 
         const results = await db.sequelize.query(query, {
@@ -210,7 +237,13 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
             Adresa: result.Adresa,
             Locatia_punct_de_trecere: result.Locatia_punct_de_trecere,
             Vama: result.Vama,
-            Timp_mediu_minute: result.timp_mediu_minute ? Math.round(result.timp_mediu_minute) : null
+            Timp_mediu_minute: result.timp_mediu_minute ? Math.round(result.timp_mediu_minute) : null,
+            Timp_stat_ultima_masina_minute: result.timp_stat_ultima_masina_minute ? Math.round(result.timp_stat_ultima_masina_minute) : null,
+            Media_ultima_ora: result.media_ultima_ora ? Math.round(result.media_ultima_ora) : null,
+            Media_ultimele_12_ore: result.media_ultimele_12_ore ? Math.round(result.media_ultimele_12_ore) : null,
+            Media_ultimele_24_ore: result.media_ultimele_24_ore ? Math.round(result.media_ultimele_24_ore) : null,
+            Media_ultima_saptamana: result.media_ultima_saptamana ? Math.round(result.media_ultima_saptamana) : null,
+            Media_ultima_luna: result.media_ultima_luna ? Math.round(result.media_ultima_luna) : null
         }));
 
         return res.status(200).json(formattedResults);
@@ -219,6 +252,7 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 
 
