@@ -206,8 +206,17 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
                  LIMIT 1) AS timp_stat_ultima_masina_minute,
                 AVG(TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)) AS timp_mediu_minute,
                 AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 30 MINUTE THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_30_minute,
+                AVG(CASE 
                     WHEN c.Timp_iesire >= NOW() - INTERVAL 1 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
                 END) AS media_ultima_ora,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 3 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_3_ore,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 6 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_6_ore,
                 AVG(CASE 
                     WHEN c.Timp_iesire >= NOW() - INTERVAL 12 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
                 END) AS media_ultimele_12_ore,
@@ -219,7 +228,13 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
                 END) AS media_ultima_saptamana,
                 AVG(CASE 
                     WHEN c.Timp_iesire >= NOW() - INTERVAL 1 MONTH THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
-                END) AS media_ultima_luna
+                END) AS media_ultima_luna,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 48 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_48_ore,
+                AVG(CASE 
+                    WHEN c.Timp_iesire >= NOW() - INTERVAL 72 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
+                END) AS media_ultimele_72_ore
             FROM Puncte_de_trecere p
             LEFT JOIN Camioane c 
                 ON p.id = c.id_punct_de_trecere
@@ -239,11 +254,16 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
             Vama: result.Vama,
             Timp_mediu_minute: result.timp_mediu_minute ? Math.round(result.timp_mediu_minute) : null,
             Timp_stat_ultima_masina_minute: result.timp_stat_ultima_masina_minute ? Math.round(result.timp_stat_ultima_masina_minute) : null,
+            Media_ultimele_30_minute: result.media_ultimele_30_minute ? Math.round(result.media_ultimele_30_minute) : null,
             Media_ultima_ora: result.media_ultima_ora ? Math.round(result.media_ultima_ora) : null,
+            Media_ultimele_3_ore: result.media_ultimele_3_ore ? Math.round(result.media_ultimele_3_ore) : null,
+            Media_ultimele_6_ore: result.media_ultimele_6_ore ? Math.round(result.media_ultimele_6_ore) : null,
             Media_ultimele_12_ore: result.media_ultimele_12_ore ? Math.round(result.media_ultimele_12_ore) : null,
             Media_ultimele_24_ore: result.media_ultimele_24_ore ? Math.round(result.media_ultimele_24_ore) : null,
             Media_ultima_saptamana: result.media_ultima_saptamana ? Math.round(result.media_ultima_saptamana) : null,
-            Media_ultima_luna: result.media_ultima_luna ? Math.round(result.media_ultima_luna) : null
+            Media_ultima_luna: result.media_ultima_luna ? Math.round(result.media_ultima_luna) : null,
+            Media_ultimele_48_ore: result.media_ultimele_48_ore ? Math.round(result.media_ultimele_48_ore) : null,
+            Media_ultimele_72_ore: result.media_ultimele_72_ore ? Math.round(result.media_ultimele_72_ore) : null
         }));
 
         return res.status(200).json(formattedResults);
@@ -252,6 +272,8 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
 
 
 
