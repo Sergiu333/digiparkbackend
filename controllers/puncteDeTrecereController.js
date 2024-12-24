@@ -234,7 +234,13 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
                 END) AS media_ultimele_48_ore,
                 AVG(CASE 
                     WHEN c.Timp_iesire >= NOW() - INTERVAL 72 HOUR THEN TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)
-                END) AS media_ultimele_72_ore
+                END) AS media_ultimele_72_ore,
+                (SELECT AVG(TIMESTAMPDIFF(MINUTE, c3.Timp_intrare, c3.Timp_iesire))
+                 FROM Camioane c3
+                 WHERE c3.id_punct_de_trecere = p.id 
+                       AND c3.isDeleted = false
+                 ORDER BY c3.Timp_iesire DESC
+                 LIMIT 10) AS media_timp_stat_ultimele_10_masini
             FROM Puncte_de_trecere p
             LEFT JOIN Camioane c 
                 ON p.id = c.id_punct_de_trecere
@@ -263,7 +269,8 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
             Media_ultima_saptamana: result.media_ultima_saptamana ? Math.round(result.media_ultima_saptamana) : null,
             Media_ultima_luna: result.media_ultima_luna ? Math.round(result.media_ultima_luna) : null,
             Media_ultimele_48_ore: result.media_ultimele_48_ore ? Math.round(result.media_ultimele_48_ore) : null,
-            Media_ultimele_72_ore: result.media_ultimele_72_ore ? Math.round(result.media_ultimele_72_ore) : null
+            Media_ultimele_72_ore: result.media_ultimele_72_ore ? Math.round(result.media_ultimele_72_ore) : null,
+            Media_timp_stat_ultimele_10_masini: result.media_timp_stat_ultimele_10_masini ? Math.round(result.media_timp_stat_ultimele_10_masini) : null
         }));
 
         return res.status(200).json(formattedResults);
@@ -272,12 +279,6 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
-
-
-
-
-
-
 
 module.exports = {
     addPunctDeTrecere,
