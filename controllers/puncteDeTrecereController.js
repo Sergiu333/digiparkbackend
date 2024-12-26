@@ -254,6 +254,27 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
             type: db.Sequelize.QueryTypes.SELECT
         });
 
+        const calculateWeightedTime = (item) => {
+            const weights = {
+                media_ultimele_30_minute: 0.4,
+                media_ultima_ora: 0.3,
+                media_ultimele_3_ore: 0.15,
+                media_ultimele_6_ore: 0.1,
+                media_ultimele_12_ore: 0.05,
+                media_ultimele_24_ore: 0.05,
+            };
+
+            let weightedTime = 0;
+            weightedTime += (item.media_ultimele_30_minute || 0) * weights.media_ultimele_30_minute;
+            weightedTime += (item.media_ultima_ora || 0) * weights.media_ultima_ora;
+            weightedTime += (item.media_ultimele_3_ore || 0) * weights.media_ultimele_3_ore;
+            weightedTime += (item.media_ultimele_6_ore || 0) * weights.media_ultimele_6_ore;
+            weightedTime += (item.media_ultimele_12_ore || 0) * weights.media_ultimele_12_ore;
+            weightedTime += (item.media_ultimele_24_ore || 0) * weights.media_ultimele_24_ore;
+
+            return Math.round(weightedTime);
+        };
+
         const formattedResults = results.map(result => ({
             Adresa: result.Adresa,
             Locatia_punct_de_trecere: result.Locatia_punct_de_trecere,
@@ -270,7 +291,8 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
             Media_ultima_luna: result.media_ultima_luna ? Math.round(result.media_ultima_luna) : null,
             Media_ultimele_48_ore: result.media_ultimele_48_ore ? Math.round(result.media_ultimele_48_ore) : null,
             Media_ultimele_72_ore: result.media_ultimele_72_ore ? Math.round(result.media_ultimele_72_ore) : null,
-            Media_timp_stat_ultimele_10_masini: result.media_timp_stat_ultimele_10_masini ? Math.round(result.media_timp_stat_ultimele_10_masini) : null
+            Media_timp_stat_ultimele_10_masini: result.media_timp_stat_ultimele_10_masini ? Math.round(result.media_timp_stat_ultimele_10_masini) : null,
+            Timp_ponderat: calculateWeightedTime(result)
         }));
 
         return res.status(200).json(formattedResults);
