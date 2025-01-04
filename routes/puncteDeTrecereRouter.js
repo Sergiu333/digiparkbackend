@@ -16,5 +16,5 @@ routerPuncteDeTrecere.delete('/:adresa',authenticateToken, authorizeAdmin, punct
 
 routerPuncteDeTrecere.get('/:adresa/agenti',authenticateToken, authorizeAdmin, puncteDeTrecereController.getAgentsByPunctDeTrecere);
 routerPuncteDeTrecere.get('/info/TimpMediu',authenticateToken, authorizeAdmin, puncteDeTrecereController.getTimpMediuPuncteTrecere);
-
+routerPuncteDeTrecere.get('/info/TimpMediuUser',authenticateToken, puncteDeTrecereController.getTimpMediuPuncteTrecere);
 module.exports = routerPuncteDeTrecere;
