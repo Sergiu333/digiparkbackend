@@ -202,6 +202,7 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
                  FROM Camioane c2
                  WHERE c2.id_punct_de_trecere = p.id 
                        AND c2.isDeleted = false
+                       AND TIMESTAMPDIFF(HOUR, c2.Timp_intrare, c2.Timp_iesire) <= 24 
                  ORDER BY c2.Timp_iesire DESC
                  LIMIT 1) AS timp_stat_ultima_masina_minute,
                 AVG(TIMESTAMPDIFF(MINUTE, c.Timp_intrare, c.Timp_iesire)) AS timp_mediu_minute,
@@ -239,6 +240,7 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
                  FROM Camioane c3
                  WHERE c3.id_punct_de_trecere = p.id 
                        AND c3.isDeleted = false
+                       AND TIMESTAMPDIFF(HOUR, c3.Timp_intrare, c3.Timp_iesire) <= 24  
                  ORDER BY c3.Timp_iesire DESC
                  LIMIT 10) AS media_timp_stat_ultimele_10_masini
             FROM Puncte_de_trecere p
@@ -248,6 +250,7 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
                  p.isDeleted = false
             AND TIMESTAMPDIFF(HOUR, c.Timp_intrare, c.Timp_iesire) <= 24 
             GROUP BY 
+            p.id
         `;
 
         const results = await db.sequelize.query(query, {
