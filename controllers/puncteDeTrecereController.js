@@ -244,10 +244,10 @@ const getTimpMediuPuncteTrecere = async (req, res) => {
             FROM Puncte_de_trecere p
             LEFT JOIN Camioane c 
                 ON p.id = c.id_punct_de_trecere
-            WHERE 
-                p.isDeleted = false
+           WHERE 
+                 p.isDeleted = false
+            AND TIMESTAMPDIFF(HOUR, c.Timp_intrare, c.Timp_iesire) <= 24 
             GROUP BY 
-                p.id
         `;
 
         const results = await db.sequelize.query(query, {
