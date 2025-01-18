@@ -1,5 +1,5 @@
 const puncteDeTrecereController = require('../controllers/puncteDeTrecereController');
-const {authorizeAdmin, authenticateToken, filterDeletedRecords} = require("../middlewares/authMiddleware");
+const {authorizeAdmin, authenticateToken, filterDeletedRecords, authenticateApiKey} = require("../middlewares/authMiddleware");
 const { puncteDeTrecere } = require("../models");
 
 const routerPuncteDeTrecere = require('express').Router();
@@ -17,4 +17,5 @@ routerPuncteDeTrecere.delete('/:adresa',authenticateToken, authorizeAdmin, punct
 routerPuncteDeTrecere.get('/:adresa/agenti',authenticateToken, authorizeAdmin, puncteDeTrecereController.getAgentsByPunctDeTrecere);
 routerPuncteDeTrecere.get('/info/TimpMediu',authenticateToken, authorizeAdmin, puncteDeTrecereController.getTimpMediuPuncteTrecere);
 routerPuncteDeTrecere.get('/info/TimpMediuUser',authenticateToken, puncteDeTrecereController.getTimpMediuPuncteTrecere);
+routerPuncteDeTrecere.get('/info/TimpMediuUserdigi',authenticateApiKey, puncteDeTrecereController.getTimpMediuPuncteTrecere);
 module.exports = routerPuncteDeTrecere;
