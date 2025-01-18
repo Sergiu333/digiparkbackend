@@ -48,14 +48,13 @@ const filterDeletedRecords = (model) => (req, res, next) => {
 };
 
 const authenticateApiKey = (req, res, next) => {
-    // Obține API Key-ul din header
-    const apiKey = req.headers['APYKEYDOT'];
+    const apiKey = req.headers['api-key'];
 
     if (!apiKey) {
         return res.status(401).json({ message: 'API Key is required' });
     }
 
-    const validApiKey = process.env.API_KEY; // Poți pune API Key-ul tău aici
+    const validApiKey = process.env.API_KEY; 
 
     if (apiKey !== validApiKey) {
         return res.status(403).json({ message: 'Invalid API Key' });
