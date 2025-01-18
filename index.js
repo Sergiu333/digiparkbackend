@@ -6,6 +6,7 @@ const app = express();
 const allowedCors = [
     'http://localhost:5173',
     'http://localhost:3000/ro',
+    'http://localhost:3000',
     'http://localhost:80',
     'app.devcom.uno',
     'https://app.devcom.uno',
