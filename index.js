@@ -16,7 +16,8 @@ const allowedCors = [
     'https://i-vama.vercel.app',
     'i-vama.vercel.app',
     'https://digipark-cam.vercel.app',
-    'digipark-cam.vercel.app'
+    'digipark-cam.vercel.app',
+    'https://digipark.md'
 ]
 
 var corsOptions = {
